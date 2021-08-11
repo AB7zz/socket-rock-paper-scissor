@@ -80,7 +80,7 @@ io.on("connection", socket => {
 
             if(playerOneChoice === playerTwoChoice) {
                 let message = "Both of you chose " + playerOneChoice + "...So it's a draw"
-                io.to(roomId).emit('draw ', message)
+                io.to(roomId).emit('draw', message)
                 choices[roomId] = ["", ""]
             }else if(moves[playerOneChoice] === playerTwoChoice){
                 let enemyChoice = ""
