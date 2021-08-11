@@ -269,5 +269,5 @@ function setWinningMessage(message){
     setTimeout(() => {
         removeChoice(myChoice)
         winMessage.innerHTML = ""
-    }, 5000)
+    }, 3500)
 }
