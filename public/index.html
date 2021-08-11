@@ -19,18 +19,20 @@
         </div>
 
         <div class="create-room-box" id="create-room-box">
-            <input type="text" id="room-id"><button id="create-room-btn">Create</button>
+            <input placeholder="Enter your name" style="display: flex; margin: auto; margin-bottom: 25px; padding: 5px 5px" type="text" id="firstplayername" required>
+            <input placeholder="Enter room name" type="text" id="room-id"><button id="create-room-btn">Create</button>
 
             <button id="cancel-create-action" class="cancel-action">Cancel</button>
         </div>
 
         <div class="join-room-box" id="join-room-box">
-            <div class="join-with-id">
+            <div class="join-with-id"> 
+                <input placeholder="Enter your name" style="display: flex; margin: auto; margin-bottom: 25px; padding: 5px 5px" type="text" id="enemyplayername" required>
                 <input type="text" id="join-room-input"><button id="join-room-btn">Join</button>
 
                 <button id="cancel-join-action" class="cancel-action">Cancel</button>
             </div>
-
+            
             <button class="join-random" id="join-random">Join Random</button>
         </div>
  

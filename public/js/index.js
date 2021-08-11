@@ -16,6 +16,9 @@ const joinRoomBtn = document.getElementById("join-room-btn");
 const joinRoomInput = document.getElementById("join-room-input");
 const joinRandomBtn = document.getElementById("join-random");
 const errorMessage = document.getElementById("error-message");
+const firstplayername = document.getElementById("firstplayername");
+const enemyplayername = document.getElementById("enemyplayername");
+const enemyscorename = document.getElementById("enemyscorename");
 const playerOne = document.getElementById("player-1");
 const playerTwo = document.getElementById("player-2");
 const waitMessage = document.getElementById("wait-message");
@@ -32,6 +35,8 @@ const winMessage = document.getElementById("win-message");
 let canChoose = false
 let playerOneConnected = false
 let playerTwoConnected = false
+let playerOneName = ""
+let playerTwoName = ""
 let playerId = 0
 let myChoice = ""
 let enemyChoice = ""
@@ -50,30 +55,33 @@ cancelCreateActionBtn.addEventListener('click', function() {
     createRoomBox.style.display = "none"
 })
 createRoomBtn.addEventListener('click', function() {
-    let id = roomIdInput.value 
+    let roomId = roomIdInput.value 
+    let username = firstplayername.value
     errorMessage.innerHTML = ""
     errorMessage.style.display = "none"
-    socket.emit('create-room', id)
+    socket.emit('create-room', {roomId, username})
 })
 //Join Room
 openJoinRoomBox.addEventListener('click', function(){
     gameplayChoices.style.display = "none"
     joinBoxRoom.style.display = "block"
-})
+}) 
 cancelJoinActionBtn.addEventListener('click', function() {
     gameplayChoices.style.display = "block"
     joinBoxRoom.style.display = "none"
 })
 joinRoomBtn.addEventListener('click', function() {
-    let id = joinRoomInput.value 
+    let roomId = joinRoomInput.value 
+    let username = enemyplayername.value
     errorMessage.innerHTML = ""
     errorMessage.style.display = "none"
-    socket.emit('join-room', id)
+    socket.emit('join-room', {roomId, username})
 })
 joinRandomBtn.addEventListener('click', function(){
+    let username = enemyplayername.value
     errorMessage.innerHTML = ""
     errorMessage.style.display = "none"
-    socket.emit('join-random')
+    socket.emit('join-random', username)
 })
 rock.addEventListener('click', function() {
     if(canChoose && (myChoice === "") && playerOneConnected && playerTwoConnected){
@@ -99,6 +107,7 @@ scissor.addEventListener('click', function() {
 
 
 // Socket
+
 socket.on('display-error', error => {
     errorMessage.style.display = "block"
     let p = document.createElement('p')
@@ -113,7 +122,16 @@ socket.on('room-created', id => {
     startScreen.style.display = "none"
     gameplayScreen.style.display = "block"
 })
-
+socket.on('player-one-username', username => {
+    playerOneName = username
+    playerOneTag.innerText = playerOneName + " (Player 1)"
+    localStorage.setItem('playerOneName', playerOneName)
+})
+socket.on('player-two-username', username => {
+    playerTwoName = username
+    playerOneName = localStorage.getItem('playerOneName')
+    playerTwoTag.innerText = playerTwoName + " (Player 2)"
+})
 socket.on('room-joined', id => {
     playerId = 2;
     roomId = id
@@ -150,7 +168,7 @@ socket.on('draw', message => {
 
 socket.on('player-1-wins', ({myChoice, enemyChoice}) => {
     if(playerId==1){
-        let message = "You chose " + myChoice + " and the enemny chose " + enemyChoice + ". So you win!"
+        let message = "You chose " + myChoice + " and the enemny chose " + enemyChoice + ". So you WIN!"
         setWinningMessage(message)
         myScorePoints++
     }else{
@@ -162,7 +180,7 @@ socket.on('player-1-wins', ({myChoice, enemyChoice}) => {
 })
 socket.on('player-2-wins', ({myChoice, enemyChoice}) => {
     if(playerId==2){
-        let message = "You chose " + myChoice + " and the enemy chose " + enemyChoice + ". So you win!"
+        let message = "You chose " + myChoice + " and the enemy chose " + enemyChoice + ". So you WIN!"
         setWinningMessage(message)
         myScorePoints++
     }else{
@@ -177,11 +195,9 @@ socket.on('player-2-wins', ({myChoice, enemyChoice}) => {
 // Functions
 function setPlayerTag(playerId){
     if(playerId === 1){
-        playerOneTag.innerText = "You (Player 1)"
-        playerTwoTag.innerText = "Enemy (Player 2)"
+        playerOneTag.innerText = playerOneName + " (Player 1)"
     }else{
-        playerOneTag.innerText = "Enemy (Player 1)"
-        playerTwoTag.innerText = "You (Player 2)"
+        playerOneTag.innerText = playerOneName + " (Player 1)"
     }
 }
 
@@ -217,6 +233,7 @@ function reset(){
     playerTwo.classList.remove('connected')
     myScorePoints = 0
     enemyScorePoints = 0
+    localStorage.removeItem('playerOneName')
     displayScore()
     setWaitMessage(true)
 }
@@ -239,7 +256,6 @@ function displayScore() {
 
 function choose(choice) {
     canChoose = false
-    console.log('choose is runnign')
     if(choice==="rock"){
         rock.classList.add('my-choice')
     }else if(choice==='paper'){
@@ -263,7 +279,7 @@ function removeChoice(choice){
 
 function setWinningMessage(message){
     let p = document.createElement('p')
-    p.innerText = message
+    p.innerHTML = message
 
     winMessage.appendChild(p)
     setTimeout(() => {

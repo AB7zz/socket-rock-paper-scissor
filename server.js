@@ -15,21 +15,22 @@ const {connectedUsers, initializeChoices, userConnected, makeMove, moves, choice
 const {rooms, createRoom, joinRoom, exitRoom} = require('./util/rooms')
 
 io.on("connection", socket => {
-    socket.on('create-room', (roomId) => {
+    socket.on('create-room', ({roomId, username}) => {
         if(rooms[roomId]){
             const error = "This room already exists"
             socket.emit("display-error", error)
         }else{
             userConnected(socket.client.id)
             createRoom(roomId, socket.client.id)
+            socket.join(roomId)
+            io.to(roomId).emit('player-one-username', username)
             socket.emit('room-created', roomId)
             socket.emit('player-1-connected')
-            console.log('player 1 connected')
-            socket.join(roomId)
+            console.log('Player 1 connected')
         }
     })
 
-    socket.on('join-room', roomId => { 
+    socket.on('join-room', ({roomId, username}) => { 
         if(!rooms[roomId]){
             const error = "This room doesn't exist"
             socket.emit('display-error', error)
@@ -37,15 +38,16 @@ io.on("connection", socket => {
             userConnected(socket.client.id)
             joinRoom(roomId, socket.client.id)
             socket.join(roomId)
+            io.to(roomId).emit('player-two-username', username)
             socket.emit('room-joined', roomId)
             socket.emit('player-2-connected')
             socket.broadcast.to(roomId).emit('player-2-connected')
-            console.log('player 2 connected')
+            console.log('Player 2 connected')
             initializeChoices(roomId)
         }
     })
 
-    socket.on('join-random', () => {
+    socket.on('join-random', username => {
         let roomId = ""
         for(let id in rooms){
             if(rooms[id][1] === ""){
@@ -61,6 +63,7 @@ io.on("connection", socket => {
             userConnected(socket.client.id)
             joinRoom(roomId, socket.client.id)
             socket.join(roomId)
+            io.to(roomId).emit('player-two-username', username)
             socket.emit('room-joined', roomId)
             socket.emit('player-2-connected')
             socket.broadcast.to(roomId).emit('player-2-connected')
@@ -124,7 +127,7 @@ io.on("connection", socket => {
                 console.log('player 1 disconnected')
             }else{
                 io.to(roomId).emit('player-2-disconnected')
-                console.log('player 2 disconnected')
+                console.log('Player 2 disconnected')
             }
         }
     })
