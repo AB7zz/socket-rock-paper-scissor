@@ -87,7 +87,7 @@ io.on("connection", socket => {
                 if(playerId === 1){
                     enemyChoice = playerTwoChoice
                 }else{
-                    enemenyChoice = playerTwoChoice
+                    enemyChoice = playerTwoChoice
                 }
                 choices[roomId] = ["", ""]
                 io.to(roomId).emit('player-1-wins', {myChoice, enemyChoice})
@@ -96,7 +96,7 @@ io.on("connection", socket => {
                 if(playerId === 1){
                     enemyChoice = playerTwoChoice
                 }else{
-                    enemenyChoice = playerTwoChoice
+                    enemyChoice = playerTwoChoice
                 }
                 choices[roomId] = ["", ""]
                 io.to(roomId).emit('player-2-wins', {myChoice, enemyChoice})
