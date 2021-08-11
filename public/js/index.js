@@ -166,25 +166,25 @@ socket.on('draw', message => {
     setWinningMessage(message)
 })
 
-socket.on('player-1-wins', ({myChoice, enemyChoice}) => {
+socket.on('player-1-wins', () => {
     if(playerId==1){
-        let message = "So you WIN!"
+        let message = "+1 point"
         setWinningMessage(message)
         myScorePoints++
     }else{
-        let message = "So you lose..."
+        let message = "0 points"
         setWinningMessage(message)
         enemyScorePoints++
     }
     displayScore()
 })
-socket.on('player-2-wins', ({myChoice, enemyChoice}) => {
+socket.on('player-2-wins', () => {
     if(playerId==2){
-        let message = "So you WIN!"
+        let message = "+1 point"
         setWinningMessage(message)
         myScorePoints++
     }else{
-        let message = "So you lose..."
+        let message = "0 points"
         setWinningMessage(message)
         enemyScorePoints++
     }
